@@ -1,10 +1,7 @@
 package mrowbotham.horn;
 
 import mrowbotham.horn.dependencies.Javascript;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.*;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -44,7 +41,7 @@ public class ScriptRunner {
             threadScope.setParentScope(null);
 
             for (int i = 0; i < args.length; i++) {
-                threadScope.put("arg" + i, threadScope, args[i]);
+                threadScope.put("arg" + i, threadScope, toJS(args[i], threadScope));
             }
 
             final Script script = getScript(function, args);
@@ -52,6 +49,18 @@ public class ScriptRunner {
         } finally {
             Context.exit();
         }
+    }
+
+    private Object toJS(Object arg, Scriptable scope) {
+        if (arg instanceof Map) {
+            final NativeObject nativeObject = new NativeObject();
+            final Map<String, ?> map = (Map<String, ?>) arg;
+            for (Map.Entry<String, ?> entry : map.entrySet()) {
+                nativeObject.defineProperty(entry.getKey(), entry.getValue(), NativeObject.READONLY);
+            }
+            return nativeObject;
+        }
+        return Context.javaToJS(arg, scope);
     }
 
     private Script getScript(String function, Object[] args) {

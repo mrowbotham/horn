@@ -1,4 +1,4 @@
-organization := "mrowbotham"
+organization := "org.mrowbotham"
 
 name := "horn"
 
