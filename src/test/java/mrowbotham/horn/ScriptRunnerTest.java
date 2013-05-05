@@ -2,6 +2,7 @@ package mrowbotham.horn;
 
 
 import mrowbotham.horn.dependencies.Classpath;
+import mrowbotham.horn.logging.ConsoleLogger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,7 @@ public class ScriptRunnerTest {
 
     @Before
     public void setUp() throws Exception {
-        runner = new ScriptRunner().init(new Classpath("js/test-script-simple.js"));
+        runner = new ScriptRunner().init(new ConsoleLogger(), new Classpath("js/test-script-simple.js"));
     }
 
     @After

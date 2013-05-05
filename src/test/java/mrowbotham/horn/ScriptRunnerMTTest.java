@@ -3,6 +3,8 @@ package mrowbotham.horn;
 
 import mrowbotham.horn.dependencies.Classpath;
 import mrowbotham.horn.dependencies.EnvJs;
+import mrowbotham.horn.logging.ConsoleLogger;
+import mrowbotham.horn.logging.Logger;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -10,8 +12,8 @@ import static org.junit.Assert.assertEquals;
 public class ScriptRunnerMTTest {
     @Test
     public void canRunMultithreaded() throws Exception {
-        final ScriptRunner runner = new ScriptRunner().init(new EnvJs(), new Classpath("js/jquery/jquery-1.9.1-min.js"),
-                new Classpath("js/test-script.js"));
+        final ScriptRunner runner = new ScriptRunner().init(new ConsoleLogger(), new EnvJs(),
+                new Classpath("js/jquery/jquery-1.9.1-min.js"), new Classpath("js/test-script.js"));
         for (int i = 0; i < 100; i++) {
             runner.run("doIt", String.class, 1, 2);
         }

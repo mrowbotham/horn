@@ -1,6 +1,7 @@
 package mrowbotham.horn;
 
 import mrowbotham.horn.dependencies.Javascript;
+import mrowbotham.horn.logging.Logger;
 import org.mozilla.javascript.*;
 
 import java.io.IOException;
@@ -18,11 +19,12 @@ public class ScriptRunner {
     private Scriptable scope;
     private Context cx;
 
-    public ScriptRunner init(Javascript... dependencies) throws IOException {
+    public ScriptRunner init(Logger logger, Javascript... dependencies) throws IOException {
         cx = ContextFactory.getGlobal().enterContext();
         cx.setOptimizationLevel(-1);
         scope = cx.initStandardObjects();
-        cx.evaluateString(scope, "var print = function(msg) { java.lang.System.out.println(msg); };", "print", 1, null);
+        scope.put("logger", scope, logger);
+        cx.evaluateString(scope, "var print = function(msg) { logger.log(msg); };", "print", 1, null);
         for (Javascript javascript : dependencies) {
             javascript.load(cx, scope);
         }
