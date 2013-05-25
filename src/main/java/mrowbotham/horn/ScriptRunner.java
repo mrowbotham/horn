@@ -20,9 +20,31 @@ public class ScriptRunner {
     private Context cx;
 
     public ScriptRunner init(Logger logger, Javascript... dependencies) throws IOException {
-        cx = ContextFactory.getGlobal().enterContext();
+        cx = new ContextFactory() {
+            @Override
+            protected boolean hasFeature(Context cx, int featureIndex) {
+                return featureIndex == Context.FEATURE_LOCATION_INFORMATION_IN_ERROR || super.hasFeature(cx, featureIndex);
+            }
+        }.enterContext();
         cx.setOptimizationLevel(-1);
         scope = cx.initStandardObjects();
+        cx.setErrorReporter(new ErrorReporter() {
+            @Override
+            public void warning(String message, String sourceName, int line, String lineSource, int lineOffset) {
+                System.err.println(message);
+            }
+
+            @Override
+            public void error(String message, String sourceName, int line, String lineSource, int lineOffset) {
+                System.err.println(message);
+                }
+
+            @Override
+            public EvaluatorException runtimeError(String message, String sourceName, int line, String lineSource, int lineOffset) {
+                System.err.println(message);
+                return null;
+            }
+        });
         scope.put("logger", scope, logger);
         cx.evaluateString(scope, "var print = function(msg) { logger.log(msg); };", "print", 1, null);
         for (Javascript javascript : dependencies) {
@@ -53,6 +75,34 @@ public class ScriptRunner {
         }
     }
 
+    public <T> T run(Scriptable target, String functionName, Class<T> type, Object... args) {
+        try {
+            final Context localContext = Context.enter();
+            final Scriptable threadScope = localContext.newObject(scope);
+            threadScope.setPrototype(scope);
+            threadScope.setParentScope(null);
+
+            Function function = (Function)target.getPrototype().get(functionName, target.getPrototype());
+            return (T)Context.jsToJava(function.call(localContext, threadScope, target, args), type);
+        } finally {
+            Context.exit();
+        }
+    }
+
+    public boolean hasFunction(Scriptable target, String functionName) {
+        try {
+            final Context localContext = Context.enter();
+            final Scriptable threadScope = localContext.newObject(scope);
+            threadScope.setPrototype(scope);
+            threadScope.setParentScope(null);
+
+            final Object potentialFunction = target.getPrototype().get(functionName, target.getPrototype());
+            return potentialFunction != null && potentialFunction instanceof Function;
+        } finally {
+            Context.exit();
+        }
+    }
+
     private Object toJS(Object arg, Scriptable scope) {
         if (arg instanceof Map) {
             final NativeObject nativeObject = new NativeObject();
@@ -70,7 +120,7 @@ public class ScriptRunner {
         for (int i = 0; i < args.length; i++) {
             functionCallStart += "arg" + i + ",";
         }
-        final String functionCall = functionCallStart.substring(0, functionCallStart.length() - 1) + ");";
+        final String functionCall = (args.length == 0 ? functionCallStart : functionCallStart.substring(0, functionCallStart.length() - 1)) + ");";
 
         synchronized (cache) {
             if (cache.containsKey(functionCall)) {
