@@ -12,6 +12,8 @@ libraryDependencies += "commons-logging" % "commons-logging" % "1.1.2"
 
 libraryDependencies += "rhino" % "js" % "1.7R2"
 
+libraryDependencies += "junit" % "junit" % "4.10"
+
 libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M4" % "test"
 
 libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"

@@ -14,16 +14,11 @@ import org.mozilla.javascript.NativeObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
 
 public class JasmineSuite extends Runner {
     private final ScriptRunner runner;
     private final Description description;
-    private final Map<String, Description> descriptionsByName;
 
     public JasmineSuite(Class testClass) {
         try {
@@ -42,7 +37,6 @@ public class JasmineSuite extends Runner {
             for (Description child : getChildren(runner.run("jasmine.getEnv().currentRunner().topLevelSuites", NativeArray.class))) {
                 description.addChild(child);
             }
-            descriptionsByName = descriptionsByName(asList(description));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,17 +63,9 @@ public class JasmineSuite extends Runner {
         return descriptions;
     }
 
-    private Map<String, Description> descriptionsByName(List<Description> descriptions) {
-        Map<String, Description> result = new HashMap<String, Description>();
-        for (Description description : descriptions) {
-            result.put(description.getDisplayName(), description);
-            result.putAll(descriptionsByName(description.getChildren()));
-        }
-        return result;
-    }
 
     @Override
     public void run(RunNotifier notifier) {
-        runner.run("runJasmine", Object.class, new JasmineRunNotifier(notifier, descriptionsByName));
+        runner.run("runJasmine", Object.class, new JasmineRunNotifier(notifier, description));
     }
 }
