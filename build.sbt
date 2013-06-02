@@ -17,3 +17,5 @@ libraryDependencies += "junit" % "junit" % "4.10"
 libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M4" % "test"
 
 libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
+
+libraryDependencies += "org.yaml" % "snakeyaml" % "1.12"

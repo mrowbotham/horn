@@ -16,17 +16,17 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 
 public class JasmineSuiteTest {
-    @WithJavascript(main = {"js/jasmine/src/Player.js", "js/jasmine/src/Song.js", "js/jasmine/src/Faily.js"},
-            test = {"js/jasmine/spec/SpecHelper.js", "js/jasmine/spec/PlayerSpec.js", "js/jasmine/spec/FailySpec.js"})
+    @WithJavascript(srcDir = "src/test/resources", srcFiles = {"**/Player.js", "**/Song.js", "**/Faily.js"},
+            specDir = "src/test/resources", specFiles = {"**/SpecHelper.js", "**/PlayerSpec.js", "**/FailySpec.js"})
     class ThreeSpecsClass {
     }
 
-    @WithJavascript(main = {"js/jasmine/src/Player.js", "js/jasmine/src/Song.js"},
-            test = {"js/jasmine/spec/SpecHelper.js", "js/jasmine/spec/PlayerSpec.js"})
+    @WithJavascript(srcDir = "src/test/resources", srcFiles = {"**/Player.js", "**/Song.js"},
+            specDir = "src/test/resources", specFiles = {"**/SpecHelper.js", "**/PlayerSpec.js"})
     class HappySpecsClass {
     }
 
-    @WithJavascript(main = {"js/jasmine/src/Faily.js"}, test = {"js/jasmine/spec/FailySpec.js"})
+    @WithJavascript(srcDir = "src/test/resources", srcFiles = {"**/Faily.js"}, specDir = "src/test/resources", specFiles = {"**/FailySpec.js"})
     class SadSpecsClass {
     }
 

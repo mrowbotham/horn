@@ -1,10 +1,7 @@
 package mrowbotham.horn.jasmine;
 
 import mrowbotham.horn.ScriptRunner;
-import mrowbotham.horn.dependencies.Classpath;
-import mrowbotham.horn.dependencies.EnvJs;
-import mrowbotham.horn.dependencies.Jasmine;
-import mrowbotham.horn.dependencies.Javascript;
+import mrowbotham.horn.dependencies.*;
 import mrowbotham.horn.logging.ConsoleLogger;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -26,11 +23,11 @@ public class JasmineSuite extends Runner {
             final List<Javascript> dependencies = new ArrayList<>();
             dependencies.add(new EnvJs());
             dependencies.add(new Jasmine());
-            for (String mainPath : withJavascriptAnnotation.main()) {
-                dependencies.add(new Classpath(mainPath));
+            for (String mainPath : withJavascriptAnnotation.srcFiles()) {
+                dependencies.add(new FileGlob(withJavascriptAnnotation.srcDir(), mainPath));
             }
-            for (String testPath : withJavascriptAnnotation.test()) {
-                dependencies.add(new Classpath(testPath));
+            for (String testPath : withJavascriptAnnotation.specFiles()) {
+                dependencies.add(new FileGlob(withJavascriptAnnotation.specDir(), testPath));
             }
             runner = new ScriptRunner().init(new ConsoleLogger(), dependencies.toArray(new Javascript[dependencies.size()]));
             description = Description.createSuiteDescription(testClass);

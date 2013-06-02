@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WithJavascript {
-    String[] main();
-    String[] test();
+    String[] srcFiles();
+    String srcDir() default "";
+    String[] specFiles();
+    String specDir() default "";
 }
