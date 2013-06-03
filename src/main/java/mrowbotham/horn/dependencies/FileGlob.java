@@ -32,6 +32,26 @@ public class FileGlob implements Javascript {
                 }
             }
         }
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileGlob fileGlob = (FileGlob) o;
+        if (baseDir != null ? !baseDir.equals(fileGlob.baseDir) : fileGlob.baseDir != null) return false;
+        return !(glob != null ? !glob.pattern().equals(fileGlob.glob.pattern()) : fileGlob.glob != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = glob != null ? glob.hashCode() : 0;
+        result = 31 * result + (baseDir != null ? baseDir.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "FileGlob{glob=" + glob + ", baseDir='" + baseDir + '\'' + '}';
     }
 }

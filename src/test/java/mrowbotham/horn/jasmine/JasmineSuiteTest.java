@@ -17,12 +17,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class JasmineSuiteTest {
     @WithJavascript(srcDir = "src/test/resources", srcFiles = {"**/Player.js", "**/Song.js", "**/Faily.js"},
-            specDir = "src/test/resources", specFiles = {"**/SpecHelper.js", "**/PlayerSpec.js", "**/FailySpec.js"})
+            specDir = "src/test/resources", helpers = {"**/SpecHelper.js"}, specFiles = {"**/PlayerSpec.js", "**/FailySpec.js"})
     class ThreeSpecsClass {
     }
 
     @WithJavascript(srcDir = "src/test/resources", srcFiles = {"**/Player.js", "**/Song.js"},
-            specDir = "src/test/resources", specFiles = {"**/SpecHelper.js", "**/PlayerSpec.js"})
+            specDir = "src/test/resources", helpers = {"**/SpecHelper.js"}, specFiles = {"**/PlayerSpec.js"})
     class HappySpecsClass {
     }
 

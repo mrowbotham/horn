@@ -20,4 +20,14 @@ public class EnvJs implements Javascript {
         new Classpath("js/env.js/timer.js").load(cx, scope);
         new Classpath("js/env.js/window.js").load(cx, scope);
     }
+
+    @Override
+    public int hashCode() {
+        return 91;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof EnvJs;
+    }
 }

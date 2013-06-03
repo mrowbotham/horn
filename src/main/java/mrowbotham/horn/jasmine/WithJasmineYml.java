@@ -7,10 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WithJavascript {
-    String[] srcFiles();
-    String srcDir() default "";
-    String[] helpers() default {};
-    String[] specFiles();
-    String specDir() default "";
+public @interface WithJasmineYml {
+    String file() default "jasmine.yml";
 }

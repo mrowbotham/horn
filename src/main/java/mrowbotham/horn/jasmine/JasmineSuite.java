@@ -13,22 +13,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 public class JasmineSuite extends Runner {
     private final ScriptRunner runner;
     private final Description description;
+    private final List<? extends JavascriptsFactory> factories = asList(new WithJavascriptFactory(), new WithJasmineYmlFactory());
 
     public JasmineSuite(Class testClass) {
         try {
-            final WithJavascript withJavascriptAnnotation = (WithJavascript)testClass.getAnnotation(WithJavascript.class);
-            final List<Javascript> dependencies = new ArrayList<>();
-            dependencies.add(new EnvJs());
-            dependencies.add(new Jasmine());
-            for (String mainPath : withJavascriptAnnotation.srcFiles()) {
-                dependencies.add(new FileGlob(withJavascriptAnnotation.srcDir(), mainPath));
-            }
-            for (String testPath : withJavascriptAnnotation.specFiles()) {
-                dependencies.add(new FileGlob(withJavascriptAnnotation.specDir(), testPath));
-            }
+            final List<Javascript> dependencies = getJavascripts(testClass);
             runner = new ScriptRunner().init(new ConsoleLogger(), dependencies.toArray(new Javascript[dependencies.size()]));
             description = Description.createSuiteDescription(testClass);
             for (Description child : getChildren(runner.run("jasmine.getEnv().currentRunner().topLevelSuites", NativeArray.class))) {
@@ -37,6 +31,16 @@ public class JasmineSuite extends Runner {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<Javascript> getJavascripts(Class testClass) {
+        for (JavascriptsFactory factory : factories) {
+            final List<Javascript> javascripts = factory.create(testClass);
+            if (javascripts != null) {
+                return javascripts;
+            }
+        }
+        throw new RuntimeException("Test class must have annotation to denote which javascripts to use");
     }
 
     @Override

@@ -12,4 +12,14 @@ public class Jasmine implements Javascript {
         new Classpath("js/jasmine/junit_direct_reporter.js").load(cx, scope);
         new Classpath("js/jasmine/run.js").load(cx, scope);
     }
+
+    @Override
+    public int hashCode() {
+        return 814;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Jasmine;
+    }
 }
