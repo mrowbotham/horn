@@ -8,10 +8,9 @@ import mrowbotham.horn.dependencies.Javascript;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WithJavascriptFactory implements JavascriptsFactory {
+public class WithJavascriptFactory implements JavascriptsFactory<WithJavascript> {
     @Override
-    public List<Javascript> create(Class testClass) {
-        final WithJavascript annotation = (WithJavascript)testClass.getAnnotation(WithJavascript.class);
+    public List<Javascript> create(WithJavascript annotation) {
         final List<Javascript> dependencies = new ArrayList<>();
         dependencies.add(new EnvJs());
         dependencies.add(new Jasmine());

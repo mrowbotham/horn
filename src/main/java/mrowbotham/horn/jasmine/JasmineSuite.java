@@ -10,15 +10,23 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 
 public class JasmineSuite extends Runner {
     private final ScriptRunner runner;
     private final Description description;
-    private final List<? extends JavascriptsFactory> factories = asList(new WithJavascriptFactory(), new WithJasmineYmlFactory());
+    private static final Map<Class, JavascriptsFactory> factories = new HashMap<Class, JavascriptsFactory>();
+
+    static {
+        factories.put(WithJasmineYml.class, new WithJasmineYmlFactory());
+        factories.put(WithJavascript.class, new WithJavascriptFactory());
+    }
 
     public JasmineSuite(Class testClass) {
         try {
@@ -34,10 +42,10 @@ public class JasmineSuite extends Runner {
     }
 
     private List<Javascript> getJavascripts(Class testClass) {
-        for (JavascriptsFactory factory : factories) {
-            final List<Javascript> javascripts = factory.create(testClass);
-            if (javascripts != null) {
-                return javascripts;
+        for (Class annotationClass : factories.keySet()) {
+            final Annotation annotation = testClass.getAnnotation(annotationClass);
+            if (annotation != null) {
+                return factories.get(annotationClass).create(annotation);
             }
         }
         throw new RuntimeException("Test class must have annotation to denote which javascripts to use");

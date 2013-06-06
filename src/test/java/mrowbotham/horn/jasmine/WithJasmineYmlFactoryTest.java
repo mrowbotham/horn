@@ -14,6 +14,9 @@ public class WithJasmineYmlFactoryTest {
     @WithJasmineYml(file = "src/test/resources/jasmine/jasmine-with-values.yml")
     public static class WithJasmineYmlWithValues {}
 
+    @WithJasmineYml(file = "src/test/resources/jasmine/jasmine-with-wrong-types.yml")
+    public static class WithJasmineYmlWithWrongTypes {}
+
     @WithJasmineYml(file = "src/test/resources/jasmine/empty-jasmine.yml")
     public static class WithEmptyJasmine {}
 
@@ -21,7 +24,7 @@ public class WithJasmineYmlFactoryTest {
 
     @Test
     public void jasmineYml() throws Exception {
-        final List<Javascript> actual = factory.create(WithJasmineYmlWithValues.class);
+        final List<Javascript> actual = factory.create(WithJasmineYmlWithValues.class.getAnnotation(WithJasmineYml.class));
 
         assertNotNull(actual);
         assertEquals(8, actual.size());
@@ -36,8 +39,21 @@ public class WithJasmineYmlFactoryTest {
     }
 
     @Test
+    public void jasmineYmlWithWrongTypes() throws Exception {
+        final List<Javascript> actual = factory.create(WithJasmineYmlWithWrongTypes.class.getAnnotation(WithJasmineYml.class));
+
+        assertNotNull(actual);
+        assertEquals(5, actual.size());
+        assertEquals(actual.get(0), new EnvJs());
+        assertEquals(actual.get(1), new Jasmine());
+        assertEquals(actual.get(2), new FileGlob("javascripts", "vendor/**/*.{js,coffee}"));
+        assertEquals(actual.get(3), new FileGlob("spec/javascripts", "helpers/**/*.{js,coffee}"));
+        assertEquals(actual.get(4), new FileGlob("spec/javascripts", "**/*[Ss]pec.coffee"));
+    }
+
+    @Test
     public void emptyJasmineYml() throws Exception {
-        final List<Javascript> actual = factory.create(WithEmptyJasmine.class);
+        final List<Javascript> actual = factory.create(WithEmptyJasmine.class.getAnnotation(WithJasmineYml.class));
 
         assertNotNull(actual);
         assertEquals(4, actual.size());

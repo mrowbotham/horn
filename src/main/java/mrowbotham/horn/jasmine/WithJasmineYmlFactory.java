@@ -15,16 +15,14 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 
-public class WithJasmineYmlFactory implements JavascriptsFactory {
+public class WithJasmineYmlFactory implements JavascriptsFactory<WithJasmineYml> {
     @Override
-    public List<Javascript> create(Class testClass) {
+    public List<Javascript> create(WithJasmineYml annotation) {
         try {
-            final WithJasmineYml annotation = (WithJasmineYml)testClass.getAnnotation(WithJasmineYml.class);
-
             final FileReader reader = new FileReader(annotation.file());
             final Map<String, ?> yml = (Map<String, ?>)new Yaml().load(reader);
-            final String srcDir = yml.get("src_dir") != null ? (String) yml.get("src_dir") : ".";
-            final String specDir = yml.get("spec_dir") != null ? (String) yml.get("spec_dir") : "spec/javascripts";
+            final String srcDir = stringWithDefault(yml, "src_dir", ".");
+            final String specDir = stringWithDefault(yml, "spec_dir", "spec/javascripts");
 
             final List<Javascript> dependencies = new ArrayList<>();
             dependencies.add(new EnvJs());
@@ -45,7 +43,13 @@ public class WithJasmineYmlFactory implements JavascriptsFactory {
         }
     }
 
-    private List<String> stringListWithDefault(Map<String, ?> yml, String key, List<String> defaults) {
-        return yml.get(key) != null ? (List<String>)yml.get(key) : defaults;
+    private List<String> stringListWithDefault(Map<String, ?> yml, String key, List<String> def) {
+        final Object val = yml.get(key);
+        return val == null ? def : (val instanceof List ? (List<String>)val : asList(val.toString()));
+    }
+
+    private String stringWithDefault(Map<String, ?> yml, String key, String def) {
+        final Object val = yml.get(key);
+        return val == null ? def : (val instanceof List ? ((List<String>)val).get(0) : val.toString());
     }
 }
